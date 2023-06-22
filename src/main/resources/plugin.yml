@@ -4,7 +4,7 @@ main: com.github.oasis.craftprotect.CraftProtectPlugin
 api-version: 1.19
 authors: [ Oasis, LeBaasti, CyntrixAlgorithm ]
 softdepend:
-  - Vault
+  - LuckPerms
 
 folia-supported: true
 

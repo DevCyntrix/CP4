@@ -36,18 +36,32 @@ public class SpawnElytraFeature implements Feature {
     public SpawnElytraFeature(CraftProtectPlugin protect) {
 
         Bukkit.getAsyncScheduler().runAtFixedRate(protect, scheduledTask -> {
-            Collection<? extends Player> players = (controller.getLocation() != null) ? controller.getLocation().getWorld().getPlayers() : Bukkit.getOnlinePlayers();
-            players.forEach(player -> {
-                if (player.getGameMode() != GameMode.SURVIVAL) return;
-                player.setAllowFlight(isInSpawnRadius(player));
-                if (flyingPlayers.contains(player) && !player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType().isAir()) {
-                    player.setAllowFlight(false);
-                    player.setFlying(false);
-                    player.setGliding(false);
-                    flyingPlayers.remove(player);
-                    boostedPlayers.remove(player);
-                }
-            });
+            try {
+                Collection<? extends Player> players = (controller.getLocation() != null) ? controller.getLocation().getWorld().getPlayers() : Bukkit.getOnlinePlayers();
+                players.forEach(player -> {
+                    if (player.getGameMode() != GameMode.SURVIVAL) return;
+                    player.setAllowFlight(isInSpawnRadius(player));
+                    if (flyingPlayers.contains(player)) {
+                        player.getScheduler().execute(protect, () -> {
+                            if (!player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType().isAir()) {
+                                player.setAllowFlight(false);
+                                player.setFlying(false);
+                                player.setGliding(false);
+                                flyingPlayers.remove(player);
+                                boostedPlayers.remove(player);
+                            }
+                        }, () -> {
+                            player.setAllowFlight(false);
+                            player.setFlying(false);
+                            player.setGliding(false);
+                            flyingPlayers.remove(player);
+                            boostedPlayers.remove(player);
+                        }, 0);
+                    }
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }, 0, 250, TimeUnit.MILLISECONDS);
     }
 

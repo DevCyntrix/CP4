@@ -6,7 +6,7 @@ import com.github.oasis.craftprotect.storage.UserStorage;
 import com.google.inject.AbstractModule;
 import com.google.inject.util.Providers;
 import com.sun.net.httpserver.HttpServer;
-import net.milkbowl.vault.chat.Chat;
+import net.luckperms.api.LuckPerms;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -27,9 +27,9 @@ public class CraftProtectInjectModule extends AbstractModule {
         bind(CraftProtectPlugin.class).toInstance(plugin);
         bind(UserStorage.class).to(AsyncUserStorage.class);
         bind(AsyncUserStorage.class).toProvider(Providers.of(plugin.getUserStorage()));
-        if (Bukkit.getPluginManager().isPluginEnabled("Vault")) {
-            bind(Chat.class)
-                    .toProvider(() -> Bukkit.getServicesManager().load(Chat.class));
+        if (Bukkit.getPluginManager().isPluginEnabled("LuckPerms")) {
+            bind(LuckPerms.class)
+                    .toProvider(() -> Bukkit.getServicesManager().load(LuckPerms.class));
         }
 
         if (this.plugin.getHttpServer() != null)

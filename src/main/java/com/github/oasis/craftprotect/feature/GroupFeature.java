@@ -6,18 +6,19 @@ import com.github.oasis.craftprotect.controller.PlayerDisplayController;
 import com.github.oasis.craftprotect.controller.PlaytimeController;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.scheduler.BukkitTask;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 @Singleton
 public class GroupFeature implements Feature {
 
-    private final BukkitTask updaterTask;
+    private final ScheduledTask updaterTask;
     @Inject
     private PlayerDisplayController controller;
 
@@ -26,12 +27,12 @@ public class GroupFeature implements Feature {
 
     @Inject
     public GroupFeature(CraftProtectPlugin plugin) {
-        this.updaterTask = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
+        this.updaterTask = Bukkit.getAsyncScheduler().runAtFixedRate(plugin, task -> {
             for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                 playtimeController.getPlaytime(onlinePlayer)
                         .thenAccept(time -> controller.updateGroup(onlinePlayer, time));
             }
-        }, 20 * 60, 20 * 60);
+        }, 1, 1, TimeUnit.MINUTES);
     }
 
     @EventHandler

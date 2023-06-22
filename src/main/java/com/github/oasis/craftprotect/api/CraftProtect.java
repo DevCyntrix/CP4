@@ -4,7 +4,6 @@ import com.github.oasis.craftprotect.config.CraftProtectConfig;
 import com.github.oasis.craftprotect.link.Execution;
 import com.github.oasis.craftprotect.storage.AsyncUserStorage;
 import com.google.common.cache.Cache;
-import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.Configuration;
@@ -64,8 +63,6 @@ public interface CraftProtect extends Plugin {
     AsyncUserStorage getUserStorage();
 
     Cache<String, Execution> getAuthorizationCache();
-
-    BukkitAudiences getAudiences();
 
 
 }

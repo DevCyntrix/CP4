@@ -16,9 +16,6 @@ import java.io.IOException;
 public class MotdFeature implements Feature {
 
     @Inject
-    private CraftProtectPlugin plugin;
-
-    @Inject
     private MotdController controller;
 
     @EventHandler
@@ -27,7 +24,7 @@ public class MotdFeature implements Feature {
 
         Component messageOfTheDay = controller.getMessageOfTheDay();
         if (messageOfTheDay != null) {
-            plugin.getAudiences().sender(player).sendMessage(messageOfTheDay);
+            player.sendMessage(messageOfTheDay);
         }
     }
 

@@ -21,7 +21,6 @@ import com.google.inject.Injector;
 import com.google.inject.Stage;
 import com.sun.net.httpserver.HttpServer;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
-import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -60,8 +59,6 @@ public final class CraftProtectPlugin extends FeaturedPlugin implements CraftPro
 
     private final Table<Player, String, Closeable> schedulerTable = HashBasedTable.create();
 
-    private BukkitAudiences audiences;
-
     private AsyncUserStorage userStorage;
 
     private String twitchAuthorizeURL;
@@ -73,7 +70,6 @@ public final class CraftProtectPlugin extends FeaturedPlugin implements CraftPro
     @Override
     public void onEnable() {
         super.onEnable();
-        this.audiences = BukkitAudiences.create(this);
 
         getLogger().info("Initializing configuration files...");
         saveDefaultConfig();
@@ -124,7 +120,7 @@ public final class CraftProtectPlugin extends FeaturedPlugin implements CraftPro
         loadFeature(MotdFeature.class);
         loadFeature(DisableEndFeature.class);
 
-        if (getServer().getPluginManager().isPluginEnabled("Vault")) {
+        if (getServer().getPluginManager().isPluginEnabled("LuckPerms")) {
             loadFeature(ChatFeature.class);
         }
 
@@ -353,7 +349,7 @@ public final class CraftProtectPlugin extends FeaturedPlugin implements CraftPro
 
     @Override
     public void sendMessage(@NotNull CommandSender sender, @NotNull String key, @NotNull Object... objects) {
-        audiences.sender(sender).sendMessage(getMessage(key, objects));
+        sender.sendMessage(getMessage(key, objects));
     }
 
     @Override
@@ -366,9 +362,5 @@ public final class CraftProtectPlugin extends FeaturedPlugin implements CraftPro
         return authorizationCache;
     }
 
-    @Override
-    public BukkitAudiences getAudiences() {
-        return audiences;
-    }
 }
 
