@@ -54,8 +54,10 @@ public class SpawnCommand implements CraftProtectCommand {
             }
         }
 
-        target.teleport(controller.getLocation());
-        protect.sendMessage(sender, "command.spawn.successful");
+        target.teleportAsync(controller.getLocation())
+                .thenRun(() -> {
+                    protect.sendMessage(sender, "command.spawn.successful");
+                });
         return true;
     }
 }

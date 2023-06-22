@@ -6,32 +6,36 @@ import com.github.oasis.craftprotect.controller.SpawnController;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import net.kyori.adventure.text.Component;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityToggleGlideEvent;
-import org.bukkit.event.player.*;
+import org.bukkit.event.player.PlayerSwapHandItemsEvent;
+import org.bukkit.event.player.PlayerToggleFlightEvent;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.TimeUnit;
 
 @Singleton
 public class SpawnElytraFeature implements Feature {
     private static final int radius = 40;
     private static final int boostMultiplier = 3;
 
-    private final List<Player> flyingPlayers = new ArrayList<>();
-    private final List<Player> boostedPlayers = new ArrayList<>();
+    private final List<Player> flyingPlayers = new CopyOnWriteArrayList<>();
+    private final List<Player> boostedPlayers = new CopyOnWriteArrayList<>();
     @Inject
     private SpawnController controller;
 
     @Inject
     public SpawnElytraFeature(CraftProtectPlugin protect) {
-        Bukkit.getScheduler().runTaskTimer(protect, () -> {
+
+        Bukkit.getAsyncScheduler().runAtFixedRate(protect, scheduledTask -> {
             Collection<? extends Player> players = (controller.getLocation() != null) ? controller.getLocation().getWorld().getPlayers() : Bukkit.getOnlinePlayers();
             players.forEach(player -> {
                 if (player.getGameMode() != GameMode.SURVIVAL) return;
@@ -40,13 +44,11 @@ public class SpawnElytraFeature implements Feature {
                     player.setAllowFlight(false);
                     player.setFlying(false);
                     player.setGliding(false);
-                    Bukkit.getScheduler().runTaskLater(protect, () -> {
-                        flyingPlayers.remove(player);
-                        boostedPlayers.remove(player);
-                    }, 5);
+                    flyingPlayers.remove(player);
+                    boostedPlayers.remove(player);
                 }
             });
-        }, 0, 5);
+        }, 0, 250, TimeUnit.MILLISECONDS);
     }
 
     @EventHandler

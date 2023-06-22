@@ -4,62 +4,20 @@ import com.github.oasis.craftprotect.CraftProtectPlugin;
 import com.github.oasis.craftprotect.api.Feature;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import de.javagl.obj.Obj;
-import de.javagl.obj.ObjReader;
-import de.javagl.obj.ObjUtils;
-import org.bukkit.util.Vector;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 @Singleton
 public class PlayerWingsFeature implements Feature {
 
     @Inject
     private CraftProtectPlugin plugin;
-    private List<Vector> vectors = new ArrayList<>();
 
     public PlayerWingsFeature() throws IOException {
-        InputStream resourceAsStream = getClass().getResourceAsStream("/witchhat.obj");
-        if (resourceAsStream != null) {
-            this.vectors = loadModel(resourceAsStream, 0.8f);
-//                    0.05f);
-        }
     }
 
 
-    public static List<Vector> loadModel(InputStream file, float scale) throws IOException {
 
-        try (InputStream inputStream = file) {
-            Obj obj = ObjReader.read(inputStream);
-            Obj normalizedObj = ObjUtils.convertToRenderable(obj);
-            List<Vector> vertices = new ArrayList<>();
-
-            // Create a Set to store unique indices of surface vertices
-            Set<Integer> surfaceVertexIndices = new HashSet<>();
-
-            // Iterate over all faces and add vertex indices to the Set
-            for (int i = 0; i < normalizedObj.getNumFaces(); i++) {
-                for (int j = 0; j < normalizedObj.getFace(i).getNumVertices(); j++) {
-                    surfaceVertexIndices.add(normalizedObj.getFace(i).getVertexIndex(j));
-                }
-            }
-
-            // Iterate over the unique surface vertex indices and add the corresponding vertices to the List
-            for (int index : surfaceVertexIndices) {
-                float x = normalizedObj.getVertex(index).getX() * scale;
-                float y = normalizedObj.getVertex(index).getY() * scale;
-                float z = normalizedObj.getVertex(index).getZ() * scale;
-                vertices.add(new Vector(x, y, z));
-            }
-
-            return vertices;
-        }
-    }
 
 /*    @EventHandler
     public void onJoin(PlayerJoinEvent event) {

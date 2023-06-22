@@ -6,6 +6,8 @@ authors: [ Oasis, LeBaasti, CyntrixAlgorithm ]
 softdepend:
   - Vault
 
+folia-supported: true
+
 libraries:
   - org.apache.commons:commons-text:1.10.0
   - io.netty:netty-all:4.1.90.Final

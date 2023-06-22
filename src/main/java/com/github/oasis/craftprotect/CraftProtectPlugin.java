@@ -20,6 +20,7 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Stage;
 import com.sun.net.httpserver.HttpServer;
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -37,7 +38,6 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import org.yaml.snakeyaml.Yaml;
 
@@ -51,6 +51,7 @@ import java.sql.SQLException;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 
 public final class CraftProtectPlugin extends FeaturedPlugin implements CraftProtect, Listener {
@@ -147,6 +148,7 @@ public final class CraftProtectPlugin extends FeaturedPlugin implements CraftPro
         registerCommand(SetSpawnCommand.class, "setspawn");
         registerCommand(SpawnCommand.class, "spawn");
         registerCommand(CPCommand.class, "craftprotect");
+        registerCommand(CosmeticsCommand.class, "cosmetics");
 
         if (userStorage != null) registerCommand(UserCommand.class, "user");
 
@@ -260,7 +262,8 @@ public final class CraftProtectPlugin extends FeaturedPlugin implements CraftPro
     @NotNull
     @Override
     public Closeable attachRepeaterTask(@NotNull Player player, @NotNull String id, @NotNull Runnable task, int delay, int period) {
-        BukkitTask bukkitTask = Bukkit.getScheduler().runTaskTimer(this, task, delay, period);
+        ScheduledTask bukkitTask = Bukkit.getGlobalRegionScheduler().runAtFixedRate(this, scheduledTask -> task.run(), delay, period);
+
         Closeable closeable = () -> {
             bukkitTask.cancel();
             schedulerTable.remove(player, id);
@@ -272,7 +275,7 @@ public final class CraftProtectPlugin extends FeaturedPlugin implements CraftPro
     @NotNull
     @Override
     public Closeable attachDelayedTask(@NotNull Player player, @NotNull String id, @NotNull Runnable task, int delay) {
-        BukkitTask bukkitTask = Bukkit.getScheduler().runTaskLater(this, task, delay);
+        ScheduledTask bukkitTask = Bukkit.getGlobalRegionScheduler().runDelayed(this, scheduledTask -> task.run(), delay);
         Closeable closeable = () -> {
             bukkitTask.cancel();
             schedulerTable.remove(player, id);
@@ -284,7 +287,7 @@ public final class CraftProtectPlugin extends FeaturedPlugin implements CraftPro
     @NotNull
     @Override
     public Closeable attachAsyncRepeaterTask(@NotNull Player player, @NotNull String id, @NotNull Runnable task, int delay, int period) {
-        BukkitTask bukkitTask = Bukkit.getScheduler().runTaskTimerAsynchronously(this, task, delay, period);
+        ScheduledTask bukkitTask = Bukkit.getAsyncScheduler().runAtFixedRate(this, scheduledTask -> task.run(), 50L * delay, 50L * period, TimeUnit.MILLISECONDS);
         Closeable closeable = () -> {
             bukkitTask.cancel();
             schedulerTable.remove(player, id);
@@ -296,7 +299,7 @@ public final class CraftProtectPlugin extends FeaturedPlugin implements CraftPro
     @NotNull
     @Override
     public Closeable attachAsyncDelayedTask(@NotNull Player player, @NotNull String id, @NotNull Runnable task, int delay) {
-        BukkitTask bukkitTask = Bukkit.getScheduler().runTaskLaterAsynchronously(this, task, delay);
+        ScheduledTask bukkitTask = Bukkit.getAsyncScheduler().runDelayed(this, scheduledTask -> task.run(), 50L * delay, TimeUnit.MILLISECONDS);
         Closeable closeable = () -> {
             bukkitTask.cancel();
             schedulerTable.remove(player, id);

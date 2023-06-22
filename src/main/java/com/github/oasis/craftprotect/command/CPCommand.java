@@ -2,6 +2,7 @@ package com.github.oasis.craftprotect.command;
 
 import com.github.oasis.craftprotect.CraftProtectPlugin;
 import com.github.oasis.craftprotect.api.CraftProtectCommand;
+import com.github.oasis.craftprotect.controller.CosmeticsController;
 import com.github.oasis.craftprotect.controller.MotdController;
 import com.google.inject.Inject;
 import org.bukkit.command.Command;
@@ -12,6 +13,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.stream.Stream;
 
 public class CPCommand implements CraftProtectCommand {
+
+    @Inject
+    private CosmeticsController cosmeticsController;
 
     @Inject
     private MotdController motdController;
@@ -26,7 +30,7 @@ public class CPCommand implements CraftProtectCommand {
 
     @Override
     public String getUsage() {
-        return "/<command> <reload|reload-motd|motd>";
+        return "/<command> <reload|reload-motd|motd|reload-models>";
     }
 
     @Override
@@ -50,13 +54,19 @@ public class CPCommand implements CraftProtectCommand {
             return true;
         }
 
+        if (args[0].equalsIgnoreCase("reload-models")) {
+            cosmeticsController
+                    .reloadModels();
+            return true;
+        }
+
         return false;
     }
 
     @Override
     public @Nullable Stream<String> tabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (args.length <= 1) {
-            return Stream.of("reload", "motd", "reload-motd");
+            return Stream.of("reload", "motd", "reload-motd", "reload-models");
         }
 
         return CraftProtectCommand.super.tabComplete(sender, command, label, args);
