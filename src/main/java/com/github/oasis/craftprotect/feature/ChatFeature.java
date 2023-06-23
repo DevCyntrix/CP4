@@ -31,11 +31,11 @@ public class ChatFeature implements Feature {
         User user = userManager.getUser(player.getUniqueId());
 
         String playerPrefix = user.getCachedData().getMetaData().getPrefix();
-        if(playerPrefix == null)
+        if (playerPrefix == null)
             playerPrefix = "";
 
         String playerSuffix = user.getCachedData().getMetaData().getSuffix();
-        if(playerSuffix == null)
+        if (playerSuffix == null)
             playerSuffix = "";
 
         String messagePrefix = user.getCachedData().getMetaData().getMetaValue("message-prefix");
