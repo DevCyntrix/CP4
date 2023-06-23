@@ -1,6 +1,7 @@
 package com.github.oasis.craftprotect.view;
 
 import com.github.oasis.craftprotect.model.PlayerDisplayModel;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 public final class TabListView {

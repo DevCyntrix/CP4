@@ -36,7 +36,7 @@ public class ChatFeature implements Feature {
 
         String playerSuffix = user.getCachedData().getMetaData().getSuffix();
         if(playerSuffix == null)
-            playerPrefix = "";
+            playerSuffix = "";
 
         String messagePrefix = user.getCachedData().getMetaData().getMetaValue("message-prefix");
         if (messagePrefix == null)
